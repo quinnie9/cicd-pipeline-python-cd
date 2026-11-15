@@ -1,6 +1,20 @@
 # tests/test_app.py
 
 
+def test_health(client, monkeypatch):
+    monkeypatch.delenv("APP_VERSION", raising=False)
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.get_json() == {"status": "ok", "version": "local"}
+
+
+def test_health_deployed_version(client, monkeypatch):
+    monkeypatch.setenv("APP_VERSION", "version-de-prueba")
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.get_json() == {"status": "ok", "version": "version-de-prueba"}
+
+
 def test_index_get(client):
     response = client.get("/")
     assert response.status_code == 200
