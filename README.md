@@ -26,7 +26,7 @@ Con Python 3.13 y el entorno virtual activado:
 ```bash
 python -m pip install --only-binary=:all: --require-hashes -r requirements-dev.lock
 black app --check
-pytest --ignore=tests/test_acceptance_app.py --cov-fail-under=80
+pytest --ignore=tests/test_acceptance_app.py --ignore=tests/test_smoke_app.py --cov-fail-under=80
 python -m app.app
 ```
 
@@ -39,13 +39,20 @@ se genera al arrancar. Gunicorn usa `--preload` para compartirla entre workers.
 El proyecto SonarCloud es `quinnie9_cicd-pipeline-python-cd`. La carpeta `infra/`
 contiene la configuración del enunciado, validada con Terraform 1.17.1, y el
 lock del proveedor AWS. El backend usa el bucket
-`tfstate-calculadora-quinnie9-20261115`; ese bucket todavía debe crearse en la
-cuenta de AWS Academy antes del primer despliegue.
+`tfstate-calculadora-quinnie9-20261115`, ya creado con versionado en AWS Academy.
 
-Pendiente: configurar los secretos y variables de GitHub Actions y las
-credenciales temporales de AWS Academy. Staging y Producción todavía no están
-desplegados. El workflow actual valida y publica la imagen; se ampliará a CD
-en la sección 7.7, después de comprobar el despliegue manual de Staging.
+El despliegue manual de Staging se verificó con dos pruebas de humo y el target
+del balanceador en estado `healthy`:
+
+http://calculadora-staging-alb-690024253.us-east-1.elb.amazonaws.com
+
+El workflow `ci-cd.yml` encadena `build-and-test`, `deploy-staging`,
+`test-staging`, `deploy-production` y `smoke-test-production`. Las pruebas y el
+workflow se publican juntos para excluir las pruebas de humo de las unitarias.
+Los secretos y variables están configurados; las credenciales de AWS Academy
+deben renovarse cuando expire la sesión. Falta verificar la ejecución completa
+y el primer despliegue de Producción. La aprobación manual de Producción se
+configura en la sección 7.11.
 
 Las evidencias, URLs de los ambientes y respuestas del Taller 3 se agregarán
 según la sección 9 del enunciado.
