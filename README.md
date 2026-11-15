@@ -50,9 +50,26 @@ El workflow `ci-cd.yml` encadena `build-and-test`, `deploy-staging`,
 `test-staging`, `deploy-production` y `smoke-test-production`. Las pruebas y el
 workflow se publican juntos para excluir las pruebas de humo de las unitarias.
 Los secretos y variables están configurados; las credenciales de AWS Academy
-deben renovarse cuando expire la sesión. Falta verificar la ejecución completa
-y el primer despliegue de Producción. La aprobación manual de Producción se
-configura en la sección 7.11.
+deben renovarse cuando expire la sesión.
+
+La [ejecución completa](https://github.com/quinnie9/cicd-pipeline-python-cd/actions/runs/43741383852)
+terminó con los cinco jobs aprobados, seis pruebas de aceptación en Staging y
+dos pruebas de humo en Producción. SonarCloud confirmó el Quality Gate aprobado
+y cobertura del 100%.
+
+Producción: http://calculadora-production-alb-1605318996.us-east-1.elb.amazonaws.com
+
+Los dos ambientes responden en `/health` con `status=ok` y la versión desplegada
+`6a51a819f1ec40955ddb3d0247c076486c9ca8b2`. Los cambios posteriores que solo
+modifican documentación no generan otro despliegue.
+
+Chrome bloqueaba el HTTP externo del ALB en las pruebas de aceptación. Se
+reprodujo el error `ERR_BLOCKED_BY_CLIENT` y se ajustó el navegador temporal de
+pruebas para el HTTP definido en el taller.
+
+La fase individual llega hasta la sección 7.9. La protección de `main` y la
+aprobación manual de Producción se configuran en el repositorio elegido por el
+equipo, en las secciones 7.10 y 7.11.
 
 Las evidencias, URLs de los ambientes y respuestas del Taller 3 se agregarán
 según la sección 9 del enunciado.
