@@ -3,6 +3,7 @@ import os
 
 import pytest
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
@@ -40,7 +41,17 @@ def get_resultado(browser):
 
 # Función de ayuda para encontrar los elementos del formulario
 def find_elements(browser):
-    num1_input = browser.find_element(By.NAME, "num1")
+    try:
+        num1_input = WebDriverWait(browser, 10).until(
+            EC.visibility_of_element_located((By.NAME, "num1"))
+        )
+    except TimeoutException:
+        contenido = browser.find_element(By.TAG_NAME, "body").text[:1000]
+        pytest.fail(
+            f"El formulario no cargó. URL: {browser.current_url}; "
+            f"título: {browser.title}; contenido: {contenido}",
+            pytrace=False,
+        )
     num2_input = browser.find_element(By.NAME, "num2")
     operacion_select = Select(browser.find_element(By.NAME, "operacion"))
     calcular_button = browser.find_element(By.CSS_SELECTOR, "button[type='submit']")
